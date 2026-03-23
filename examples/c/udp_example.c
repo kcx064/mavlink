@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <time.h>
+#include <sys/time.h>
 
 #include <mavlink/common/mavlink.h>
 
@@ -82,10 +83,11 @@ void receive_some(int socket_fd, struct sockaddr_in* src_addr, socklen_t* src_ad
 
     if (ret < 0) {
         printf("recvfrom error: %s\n", strerror(errno));
-    } else if (ret == 0) {
-        // peer has done an orderly shutdown
         return;
-    } 
+    } else if (ret == 0) {
+        // timeout, try again later
+        return;
+    }
 
     *src_addr_set = true;
 
